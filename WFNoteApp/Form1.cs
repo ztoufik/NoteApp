@@ -16,5 +16,49 @@ namespace WFNoteApp
         {
             InitializeComponent();
         }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.N))
+            {
+                CtrlNHandler();
+                return true;
+            }
+
+            if (keyData == (Keys.Control | Keys.S))
+            {
+                CtrlSHandler();
+                return true;
+            }
+
+            if (keyData == (Keys.Control | Keys.E))
+            {
+                CtrlEHandler();
+                return true;
+            }
+
+            if (keyData == (Keys.Control | Keys.D))
+            {
+                CtrlDHandler();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void CtrlDHandler()
+        {
+        }
+
+        private void CtrlEHandler()
+        {
+        }
+
+        private void CtrlNHandler()
+        {
+        }
+
+        private void CtrlSHandler()
+        {
+        }
     }
 }
