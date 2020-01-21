@@ -158,6 +158,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\ML.cs" />
+    <Compile Include="BL\NoteNode.cs" />
     <Compile Include="DL\DataProvider\IDataProvider.cs" />
     <Compile Include="DL\DataProvider\SqliteDataProvider.cs" />
     <Compile Include="DL\DB\INote.cs" />

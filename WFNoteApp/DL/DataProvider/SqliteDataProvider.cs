@@ -24,7 +24,10 @@ namespace WFNoteApp.DL.DataProvider
             {
                 using (NotesDbContext notesDb=new NotesDbContext())
                 {
-                    notesDb.Notes.Remove(note as Note);
+                    Note SelectedNote = notesDb.Notes.Single(
+                        (NOTE) => (NOTE.Title==note.Title) && (NOTE.Desc==note.Desc)
+                        );
+                    notesDb.Notes.Remove(SelectedNote);
                     notesDb.SaveChanges();
                 }
                 return true;
@@ -35,13 +38,14 @@ namespace WFNoteApp.DL.DataProvider
             }
         }
 
-        public IEnumerable<INote> RetreiveNote(string title)
+        public IEnumerable<INote> RetreiveNote(string title=null)
         {
             try
             {
                 using (NotesDbContext notesDb=new NotesDbContext() )
                 {
-                    IEnumerable<INote> notes = notesDb.Notes.Where((note) => note.Title == title);
+                    IEnumerable<INote> notes = 
+                        string.IsNullOrEmpty(title)?notesDb.Notes:notesDb.Notes.Where((note) => note.Title == title);
 
                     return notes.ToList();
                 }
@@ -70,27 +74,5 @@ namespace WFNoteApp.DL.DataProvider
             }
         }
 
-        public bool UpdateNote(INote oldnote, INote newnote)
-        {
-            try
-            {
-                using (NotesDbContext notesDb=new NotesDbContext())
-                {
-                    INote SelectedNote = notesDb.Notes.Single(
-                        (note) => (note.Title == oldnote.Title) && (note.Desc == oldnote.Desc)
-                        );
-
-                    SelectedNote.Title = newnote.Title;
-                    SelectedNote.Desc = newnote.Desc;
-
-                    notesDb.SaveChanges();
-                }
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WFNoteApp.BL;
 
 namespace WFNoteApp
 {
@@ -15,6 +16,7 @@ namespace WFNoteApp
         public FormNote()
         {
             InitializeComponent();
+            RestoreSavedNote();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -47,18 +49,87 @@ namespace WFNoteApp
 
         private void CtrlDHandler()
         {
+            if (TrVwNotesList.SelectedNode is NoteNode noteNode)
+            {
+                TxtTitle.Text = RTxtDesc.Text = string.Empty;
+
+                ML.DeleteNoteNode(noteNode);
+                noteNode.IsSaved = false;
+                TrVwNotesList.Nodes.Remove(noteNode);
+            }
         }
 
         private void CtrlEHandler()
         {
+            if (TrVwNotesList.SelectedNode is NoteNode noteNode)
+            {
+                TxtTitle.Enabled = RTxtDesc.Enabled = true;
+
+                ML.DeleteNoteNode(noteNode);
+                noteNode.IsSaved = false;
+                noteNode.ForeColor = Color.Yellow;
+                noteNode.BackColor = Color.Red;
+            }
         }
 
         private void CtrlNHandler()
         {
+            if ((TrVwNotesList.SelectedNode as NoteNode)?.IsSaved ??true )
+            {
+                TxtTitle.Text = RTxtDesc.Text = string.Empty;
+                TxtTitle.Enabled = RTxtDesc.Enabled = true;
+                TxtTitle.Focus();
+
+                TreeNode node = new NoteNode();
+                node.ForeColor = Color.Yellow;
+                node.BackColor = Color.Red;
+                TrVwNotesList.Nodes.Add(node);
+
+                TrVwNotesList.SelectedNode=node; 
+            }
         }
 
         private void CtrlSHandler()
         {
+            NoteNode note = TrVwNotesList.SelectedNode as NoteNode;
+
+            note.Text=note.Title = TxtTitle.Text;
+            note.Desc = RTxtDesc.Text;
+            ML.SaveNoteNode(note);
+            note.IsSaved = true;
+
+            note.ForeColor = Color.Black;
+            note.BackColor = Color.White;
+
+            TxtTitle.Enabled = RTxtDesc.Enabled = false;
+
+        }
+
+        private void RestoreSavedNote()
+        {
+            foreach (var note in ML.RetrieveNotes(null))
+            {
+                TrVwNotesList.Nodes.Add(note);
+            }
+            TrVwNotesList.SelectedNode=TrVwNotesList.Nodes?[0];
+            TxtTitle.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Title;
+            RTxtDesc.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Desc;
+        }
+
+        private void TrVwNotesList_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case TreeViewAction.ByKeyboard:
+
+                case TreeViewAction.ByMouse:
+                    {
+                        TxtTitle.Text = (e.Node as NoteNode)?.Title;
+                        RTxtDesc.Text = (e.Node as NoteNode)?.Desc;
+                        break;
+                    }
+
+            }
         }
     }
 }

@@ -42,9 +42,11 @@
             this.TrVwNotesList.Name = "TrVwNotesList";
             this.TrVwNotesList.Size = new System.Drawing.Size(160, 367);
             this.TrVwNotesList.TabIndex = 0;
+            this.TrVwNotesList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TrVwNotesList_AfterSelect);
             // 
             // TxtTitle
             // 
+            this.TxtTitle.Enabled = false;
             this.TxtTitle.Location = new System.Drawing.Point(269, 55);
             this.TxtTitle.Name = "TxtTitle";
             this.TxtTitle.Size = new System.Drawing.Size(242, 20);
@@ -52,6 +54,7 @@
             // 
             // RTxtDesc
             // 
+            this.RTxtDesc.Enabled = false;
             this.RTxtDesc.Location = new System.Drawing.Point(269, 116);
             this.RTxtDesc.Name = "RTxtDesc";
             this.RTxtDesc.Size = new System.Drawing.Size(427, 306);

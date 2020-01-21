@@ -13,8 +13,6 @@ namespace WFNoteApp.DL.DataProvider
 
         bool DeleteNote(INote note);
 
-        bool UpdateNote(INote oldnote,INote newnote );
-
         IEnumerable<INote> RetreiveNote(string title);
     }
 }
