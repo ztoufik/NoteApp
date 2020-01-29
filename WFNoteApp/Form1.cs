@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Squirrel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,7 +17,26 @@ namespace WFNoteApp
         public FormNote()
         {
             InitializeComponent();
-            RestoreSavedNote();
+
+            try
+            {
+                RestoreSavedNote();
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.ToString());
+            }
+
+            CheckForUpdate();
+        }
+
+        private async Task CheckForUpdate()
+        {
+            using (var manager=new UpdateManager(@"D:\NoteApp\Releases"))
+            {
+                await manager.UpdateApp();
+            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -49,26 +69,41 @@ namespace WFNoteApp
 
         private void CtrlDHandler()
         {
-            if (TrVwNotesList.SelectedNode is NoteNode noteNode)
-            {
-                TxtTitle.Text = RTxtDesc.Text = string.Empty;
+            NoteNode note = TrVwNotesList.SelectedNode as NoteNode;
 
-                ML.DeleteNoteNode(noteNode);
-                noteNode.IsSaved = false;
-                TrVwNotesList.Nodes.Remove(noteNode);
+            if (note?.IsSaved??false)
+            {
+                if (ML.DeleteNoteNode(note))
+                {
+                    TxtTitle.Text = RTxtDesc.Text = string.Empty;
+
+                    note.IsSaved = false;
+                    TrVwNotesList.Nodes.Remove(note); 
+                }
+                else
+                {
+                    MessageBox.Show("failed deletion");
+                }
             }
         }
 
         private void CtrlEHandler()
         {
-            if (TrVwNotesList.SelectedNode is NoteNode noteNode)
-            {
-                TxtTitle.Enabled = RTxtDesc.Enabled = true;
+            NoteNode note = TrVwNotesList.SelectedNode as NoteNode;
 
-                ML.DeleteNoteNode(noteNode);
-                noteNode.IsSaved = false;
-                noteNode.ForeColor = Color.Yellow;
-                noteNode.BackColor = Color.Red;
+            if (note?.IsSaved ?? false)
+            {
+                if (ML.DeleteNoteNode(note))
+                {
+                    TxtTitle.Enabled = RTxtDesc.Enabled = true;
+                    note.IsSaved = false;
+                    note.ForeColor = Color.Yellow;
+                    note.BackColor = Color.Red; 
+                }
+                else
+                {
+                    MessageBox.Show("failed deletion");
+                }
             }
         }
 
@@ -93,27 +128,38 @@ namespace WFNoteApp
         {
             NoteNode note = TrVwNotesList.SelectedNode as NoteNode;
 
-            note.Text=note.Title = TxtTitle.Text;
-            note.Desc = RTxtDesc.Text;
-            ML.SaveNoteNode(note);
-            note.IsSaved = true;
+            if (!note?.IsSaved??false)
+            {
+                note.Text = note.Title = TxtTitle.Text;
+                note.Desc = RTxtDesc.Text;
 
-            note.ForeColor = Color.Black;
-            note.BackColor = Color.White;
+                if (ML.SaveNoteNode(note))
+                {
+                    note.IsSaved = true;
 
-            TxtTitle.Enabled = RTxtDesc.Enabled = false;
+                    note.ForeColor = Color.Black;
+                    note.BackColor = Color.White;
+
+                    TxtTitle.Enabled = RTxtDesc.Enabled = false;
+                } 
+            }
 
         }
 
         private void RestoreSavedNote()
         {
-            foreach (var note in ML.RetrieveNotes(null))
+            IEnumerable<NoteNode> noteslist = ML.RetrieveNotes(null);
+            if (noteslist.Count()>0)
             {
-                TrVwNotesList.Nodes.Add(note);
+                foreach (var note in noteslist)
+                {
+                    note.IsSaved = true;
+                    TrVwNotesList.Nodes.Add(note);
+                }
+                TrVwNotesList.SelectedNode = TrVwNotesList.Nodes?[0];
+                TxtTitle.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Title;
+                RTxtDesc.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Desc; 
             }
-            TrVwNotesList.SelectedNode=TrVwNotesList.Nodes?[0];
-            TxtTitle.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Title;
-            RTxtDesc.Text = (TrVwNotesList.SelectedNode as NoteNode)?.Desc;
         }
 
         private void TrVwNotesList_AfterSelect(object sender, TreeViewEventArgs e)

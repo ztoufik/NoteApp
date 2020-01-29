@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,8 @@ namespace WFNoteApp.DL.DB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source = NotesDb.db");
+            string DbFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"NotesDb.db");
+            optionsBuilder.UseSqlite($"Data Source = {DbFilePath}");
             base.OnConfiguring(optionsBuilder);
         }
 

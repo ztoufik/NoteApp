@@ -24,7 +24,7 @@ namespace WFNoteApp.DL.DataProvider
             {
                 using (NotesDbContext notesDb=new NotesDbContext())
                 {
-                    Note SelectedNote = notesDb.Notes.Single(
+                    Note SelectedNote = notesDb.Notes.FirstOrDefault(
                         (NOTE) => (NOTE.Title==note.Title) && (NOTE.Desc==note.Desc)
                         );
                     notesDb.Notes.Remove(SelectedNote);
@@ -32,7 +32,7 @@ namespace WFNoteApp.DL.DataProvider
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception )
             {
                 return false;
             }

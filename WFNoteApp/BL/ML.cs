@@ -13,29 +13,25 @@ namespace WFNoteApp.BL
     {
         private static IDataProvider dataProvider;
 
-         static  ML()
+        static  ML()
         {
             dataProvider = new SqliteDataProvider();
         }
 
-        public static void SaveNoteNode(NoteNode noteNode)
+        public static bool SaveNoteNode(NoteNode noteNode)
         {
             Note note = NoteNode2Note(noteNode);
 
-            if (!dataProvider.SaveNote(note))
-            {
-                MessageBox.Show("failed saving");
-            }
+            return dataProvider.SaveNote(note);
+            
         }
 
-        public static void DeleteNoteNode(NoteNode noteNode)
+        public static bool DeleteNoteNode(NoteNode noteNode)
         {
             Note note = NoteNode2Note(noteNode);
 
-            if (!dataProvider.DeleteNote(note))
-            {
-                MessageBox.Show("failed Deletion");
-            }
+            return dataProvider.DeleteNote(note);
+           
         }
 
         public static IEnumerable<NoteNode> RetrieveNotes(string Title)
@@ -58,7 +54,6 @@ namespace WFNoteApp.BL
             {
                 Title = note.Title,
                 Desc = note.Desc,
-                IsSaved = true
             };
         }
     }
