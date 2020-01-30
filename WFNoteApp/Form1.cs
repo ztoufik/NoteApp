@@ -64,6 +64,13 @@ namespace WFNoteApp
                 CtrlDHandler();
                 return true;
             }
+
+            if (keyData == (Keys.Control | Keys.Q))
+            {
+                Close();
+                return true;
+            }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
